@@ -11,11 +11,12 @@ TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    requests.post(url, json={
+    result = requests.post(url, json={
         "chat_id": TELEGRAM_CHAT_ID,
         "text": message
     })
-    return response.json()
+    print(f"Telegram response: {result.status_code} - {result.text}")
+    return result
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
