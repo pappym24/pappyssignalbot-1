@@ -19,7 +19,12 @@ def send_telegram(message):
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.json
+    # Handle both JSON and form data
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.get_json(force=True)
+    
     alert_message = data.get("message", "")
     price = data.get("price", "N/A")
     sl = data.get("sl", "N/A")
