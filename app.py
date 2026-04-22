@@ -11,12 +11,9 @@ TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    # Clean message to avoid Markdown parsing errors
-    safe_message = message.replace("_", "\\_").replace("*", "\\*").replace("[", "\\[").replace("`", "\\`")
-    response = requests.post(url, json={
+    requests.post(url, json={
         "chat_id": TELEGRAM_CHAT_ID,
-        "text": safe_message,
-        "parse_mode": "Markdown"
+        "text": message
     })
     return response.json()
 
