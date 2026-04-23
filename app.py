@@ -27,19 +27,16 @@ def webhook():
         sl = data.get("sl", "N/A")
         tp = data.get("tp", "N/A")
 
-        api_key = os.environ.get("ANTHROPIC_API_KEY")
-        client = anthropic.Anthropic(api_key=api_key)
-        response = client.messages.create(
-            model="claude-sonnet-4-5",
-            max_tokens=300,
-            messages=[{
-                "role": "user",
-                "content": f"""You are a gold trading assistant.
-A TradingView alert fired for XAU/USD:
-Alert: {alert_message}
-Entry Price: {price}
-Stop Loss: {sl}
-Take Profit: {tp}
+      api_key = os.environ.get("ANTHROPIC_API_KEY")
+client = anthropic.Anthropic(api_key=api_key, timeout=25.0)
+response = client.messages.create(
+    model="claude-haiku-4-5",
+    max_tokens=150,
+    messages=[{
+        "role": "user",
+        "content": f"Gold trade alert: {alert_message} at price {price}, SL {sl}, TP {tp}. Give a 1 sentence verdict: BUY or SELL and why."
+    }]
+)
 Give a 2 sentence analysis and confirm if valid."""
             }]
         )
