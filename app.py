@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import anthropic
 import requests
 import os
+import json
 
 app = Flask(__name__)
 
@@ -14,10 +15,10 @@ def send_telegram(message):
         "text": message
     })
     print(f"Telegram response: {result.status_code} - {result.text}")
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
     try:
-        import json
         raw = request.get_data(as_text=True)
         print(f"Raw request: {raw}")
         data = json.loads(raw)
@@ -27,17 +28,14 @@ def webhook():
         sl = data.get("sl", "N/A")
         tp = data.get("tp", "N/A")
 
-      api_key = os.environ.get("ANTHROPIC_API_KEY")
-client = anthropic.Anthropic(api_key=api_key, timeout=25.0)
-response = client.messages.create(
-    model="claude-haiku-4-5",
-    max_tokens=150,
-    messages=[{
-        "role": "user",
-        "content": f"Gold trade alert: {alert_message} at price {price}, SL {sl}, TP {tp}. Give a 1 sentence verdict: BUY or SELL and why."
-    }]
-)
-Give a 2 sentence analysis and confirm if valid."""
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        client = anthropic.Anthropic(api_key=api_key, timeout=25.0)
+        response = client.messages.create(
+            model="claude-haiku-4-5",
+            max_tokens=150,
+            messages=[{
+                "role": "user",
+                "content": f"Gold trade alert: {alert_message} at price {price}, SL {sl}, TP {tp}. Give a 1 sentence verdict: BUY or SELL and why."
             }]
         )
 
@@ -49,5 +47,7 @@ Give a 2 sentence analysis and confirm if valid."""
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 200
+
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
